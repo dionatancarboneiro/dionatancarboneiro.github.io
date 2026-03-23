@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bloco de Vendas - Master AI</title>
+    <style>
+        /* RESET E FONTES */
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Roboto:wght@300;400;500&display=swap');
+
+        :root {
+            --primary-gold: #c6a87c;
+            --primary-gold-hover: #e0c496;
+            --dark-bg: #0b1116;
+            --card-bg: #151e26;
+            --text-white: #ffffff;
+            --text-gray: #b0b8c1;
+            --accent-blue: #2563eb;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #000; /* Apenas para visualização*/
+        }
+
+        /* CONTAINER PRINCIPAL */
+        .sdmai-sales-section {
+            background-color: var(--dark-bg);
+            padding: 60px 20px;
+            display: flex;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .sdmai-container {
+            max-width: 1100px;
+            width: 100%;
+            background: var(--card-bg);
+            border: 1px solid #2a3b4c;
+            border-radius: 12px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            display: grid;
+            grid-template-columns: 1fr 1.2fr;
+            gap: 40px;
+            padding: 50px;
+            position: relative;
+            opacity: 0; /* Para animação JS */
+            transform: translateY(30px);
+            transition: all 0.8s ease-out;
+        }
+
+        .sdmai-container.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* COLUNA DA IMAGEM (ESQUERDA) */
+        .sdmai-visual {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        /* Efeito de brilho atrás do livro */
+        .sdmai-glow {
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(198,168,124,0.2) 0%, rgba(0,0,0,0) 70%);
+            z-index: 0;
+        }
+
+        .sdmai-book-img {
+            width: 100%;
+            max-width: 380px;
+            height: auto;
+            transform: perspective(1000px) rotateY(-15deg);
+            box-shadow: 20px 20px 30px rgba(0,0,0,0.5);
+            transition: transform 0.3s ease;
+            z-index: 1;
+            border-radius: 5px;
+        }
+
+        .sdmai-book-img:hover {
+            transform: perspective(1000px) rotateY(0deg) scale(1.02);
+        }
+
+        .sdmai-caption {
+            margin-top: 20px;
+            color: var(--text-gray);
+            font-size: 0.9rem;
+            text-align: center;
+            font-style: italic;
+        }
+
+        /* COLUNA DO CONTEÚDO (DIREITA) */
+        .sdmai-content {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .sdmai-tag {
+            background-color: rgba(198,168,124, 0.1);
+            color: var(--primary-gold);
+            padding: 5px 12px;
+            border-radius: 4px;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            width: fit-content;
+            margin-bottom: 20px;
+            border: 1px solid rgba(198,168,124, 0.3);
+        }
+
+        .sdmai-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 2.5rem;
+            line-height: 1.1;
+            color: var(--text-white);
+            margin-bottom: 15px;
+            font-weight: 800;
+        }
+
+        .sdmai-title span {
+            color: var(--primary-gold);
+        }
+
+        .sdmai-subtitle {
+            font-size: 1.1rem;
+            color: var(--text-gray);
+            line-height: 1.6;
+            margin-bottom: 30px;
+            border-left: 3px solid var(--primary-gold);
+            padding-left: 15px;
+        }
+
+        /* LISTA DE BENEFÍCIOS */
+        .sdmai-benefits {
+            list-style: none;
+            margin-bottom: 35px;
+        }
+
+        .sdmai-benefits li {
+            display: flex;
+            align-items: start;
+            margin-bottom: 12px;
+            color: #e2e8f0;
+            font-size: 1rem;
+        }
+
+        .sdmai-icon {
+            color: var(--primary-gold);
+            margin-right: 12px;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        /* BOTÃO DE AÇÃO */
+        .sdmai-cta-box {
+            background: linear-gradient(145deg, #1a2631, #11181f);
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #2a3b4c;
+            text-align: center;
+        }
+
+        .sdmai-price {
+            display: block;
+            font-size: 0.9rem;
+            color: var(--text-gray);
+            margin-bottom: 10px;
+        }
+
+        .sdmai-price strong {
+            color: var(--text-white);
+            font-size: 1.5rem;
+            text-decoration: line-through;
+            opacity: 0.6;
+            margin-right: 10px;
+        }
+
+        .sdmai-price span {
+            color: var(--primary-gold);
+            font-size: 1.8rem;
+            font-weight: 800;
+        }
+
+        .sdmai-btn {
+            display: inline-block;
+            width: 100%;
+            background: var(--primary-gold);
+            color: #000;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 800;
+            text-transform: uppercase;
+            text-decoration: none;
+            padding: 18px 30px;
+            border-radius: 6px;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(198, 168, 124, 0.4);
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+            border: none;
+        }
+
+        .sdmai-btn:hover {
+            background: var(--primary-gold-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(198, 168, 124, 0.6);
+        }
+
+        .sdmai-guarantee {
+            margin-top: 15px;
+            font-size: 0.8rem;
+            color: var(--text-gray);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+
+        /* RESPONSIVIDADE */
+        @media (max-width: 900px) {
+            .sdmai-container {
+                grid-template-columns: 1fr;
+                padding: 30px 20px;
+                gap: 30px;
+            }
+
+            .sdmai-visual {
+                order: 1; /* Imagem primeiro no mobile? Pode trocar para 2 se preferir texto primeiro */
+            }
+
+            .sdmai-title {
+                font-size: 2rem;
+                text-align: center;
+            }
+
+            .sdmai-subtitle {
+                text-align: center;
+                border: none;
+                padding: 0;
+            }
+
+            .sdmai-tag {
+                margin: 0 auto 20px auto;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- INÍCIO DO BLOCO DE VENDAS -->
+    <section class="sdmai-sales-section" id="venda-livro">
+        <div class="sdmai-container">
+            
+            <!-- Lado Esquerdo: Imagem -->
+            <div class="sdmai-visual">
+                <div class="sdmai-glow"></div>
+                <!-- SUBSTITUA O SRC ABAIXO PELA URL DA SUA IMAGEM DE CAPA DO LIVRO -->
+                <img src="https://nutrivida.blog/wp-content/uploads/2025/12/capa.png" alt="Capa Livro Digital Master AI" class="sdmai-book-img">
+                <p class="sdmai-caption">O "GPS de Engenharia" que faltava no seu negócio.</p>
+            </div>
+
+            <!-- Lado Direito: Copy -->
+            <div class="sdmai-content">
+                <div class="sdmai-tag">Engenharia de Negócios</div>
+                
+                <h2 class="sdmai-title">Pare de ser o Motor.<br>Torne-se o <span>Engenheiro</span>.</h2>
+                
+                <p class="sdmai-subtitle">
+                    O <b>Paradoxo do Sucesso</b> é real: quanto mais você cresce vendendo horas, menos livre você se torna. O Sistema Digital Master AI é o manual prático para empacotar seu conhecimento em um <b>Ativo Digital</b> que vende com escala, sem depender da sua presença física.
+                </p>
+
+                <ul class="sdmai-benefits">
+                    <li><span class="sdmai-icon">✓</span> <span><b>Dr. Linear vs. Dr. Escala:</b> A matemática para sair do "cativeiro bem remunerado".</span></li>
+                    <li><span class="sdmai-icon">✓</span> <span><b>O Protocolo Americano:</b> Como usar funis Low-Ticket para adquirir clientes a custo zero.</span></li>
+                    <li><span class="sdmai-icon">✓</span> <span><b>Acelerador com IA:</b> Prompts prontos para estruturar seu curso e roteiros em minutos.</span></li>
+                    <li><span class="sdmai-icon">✓</span> <span><b>Autoridade Relativa:</b> Por que você não precisa ser um "Guru" para vender muito.</span></li>
+                </ul>
+
+                <div class="sdmai-cta-box">
+                    <div class="sdmai-price">
+                        De <strong>R$ 97,00</strong> por apenas <span>R$ 27,00</span>
+                    </div>
+                    <!-- LINK DE CHECKOUT AQUI -->
+                    <a href="SEU_LINK_DE_CHECKOUT_AQUI" class="sdmai-btn">
+                        QUERO ACESSAR O SISTEMA AGORA
+                    </a>
+                    <div class="sdmai-guarantee">
+                        🔒 Pagamento Seguro • Acesso Imediato
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- SCRIPT DE ANIMAÇÃO -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const container = document.querySelector('.sdmai-container');
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        container.classList.add('visible');
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            observer.observe(container);
+        });
+    </script>
+
+</body>
+</html>
